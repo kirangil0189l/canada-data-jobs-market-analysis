@@ -29,7 +29,7 @@ job descriptions, and built a Tableau dashboard to explore the results.
 ---
 
 ## Dashboard
-👉 [View on Tableau Public](https://public.tableau.com/shared/D8T9MJR3Y?:display_count=n&:origin=viz_share_link)
+ [View on Tableau Public](https://public.tableau.com/shared/D8T9MJR3Y?:display_count=n&:origin=viz_share_link)
 
 ---
 
