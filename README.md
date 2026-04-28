@@ -76,6 +76,19 @@ python3 combine_data.py       # merge everything
 Then open Tableau and connect to `canada_jobs_tableau.csv`
 
 ---
+## Updated Version of above project using n8n
+## n8n Automation Workflow
+
+I extended this project by creating an n8n workflow to automate job market data collection and monitoring. The workflow collects job postings from multiple APIs, combines the data into one dataset, removes duplicate job postings, and saves the cleaned records into Google Sheets. I also added a weekly alert that checks for newly posted jobs and notifies me about new opportunities.
+
+Workflow steps:
+1. Schedule Trigger runs the workflow automatically.
+2. HTTP Request nodes collect job posting data from multiple APIs.
+3. JavaScript code nodes clean and standardize the fields.
+4. Merge node combines data from different sources.
+5. Duplicate records are removed to keep the dataset clean.
+6. Google Sheets node stores the final cleaned data.
+7. Weekly alert identifies newly posted jobs.
 
 **Sukhkirandeep Kaur Sidhu,Ph.D.**  
 [Portfolio](https://www.sukhkirandeep.com) · 
