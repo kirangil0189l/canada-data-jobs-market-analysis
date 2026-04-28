@@ -43,11 +43,13 @@ job descriptions, and built a Tableau dashboard to explore the results.
 | `combined_data.py` | Merges both sources into one dataset |
 | `canada_jobs_tableau.csv` | Final cleaned data used in Tableau |
 | `skill_analysis_final.csv` | Skill counts and percentages |
+| `n8n_workflow/workflow_screenshot.png` | Screenshot of the n8n automation workflow |
+| `n8n_workflow/n8n_job_market_workflow.json` | Exported n8n workflow file |
 
 ---
 
 ## Tools Used
-Python · Pandas · BeautifulSoup · Matplotlib · Tableau · JSearch API · RemoteOK API
+Python · Pandas · BeautifulSoup · Matplotlib · Tableau · JSearch API · RemoteOK API . JSearch API · RemoteOK API · n8n · JavaScript · Google Sheets
 
 ---
 
@@ -76,12 +78,14 @@ python3 combine_data.py       # merge everything
 Then open Tableau and connect to `canada_jobs_tableau.csv`
 
 ---
-## Updated Version of above project using n8n
-## n8n Automation Workflow
+---
+
+## Automation Extension with n8n
 
 I extended this project by creating an n8n workflow to automate job market data collection and monitoring. The workflow collects job postings from multiple APIs, combines the data into one dataset, removes duplicate job postings, and saves the cleaned records into Google Sheets. I also added a weekly alert that checks for newly posted jobs and notifies me about new opportunities.
 
-Workflow steps:
+### Workflow Steps
+
 1. Schedule Trigger runs the workflow automatically.
 2. HTTP Request nodes collect job posting data from multiple APIs.
 3. JavaScript code nodes clean and standardize the fields.
@@ -89,6 +93,8 @@ Workflow steps:
 5. Duplicate records are removed to keep the dataset clean.
 6. Google Sheets node stores the final cleaned data.
 7. Weekly alert identifies newly posted jobs.
+
+![n8n Workflow Screenshot](n8n_workflow/workflow_screenshot.png)
 
 **Sukhkirandeep Kaur Sidhu,Ph.D.**  
 [Portfolio](https://www.sukhkirandeep.com) · 
