@@ -1,0 +1,476 @@
+{
+  "name": "DA Job Market-Weekly Collector",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 13
+            },
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cefeb630-1bbb-41c5-ba52-b32b5776aa14",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://jsearch.p.rapidapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "data analyst canada"
+            },
+            {
+              "name": "num_pages",
+              "value": "3"
+            },
+            {
+              "name": "date_posted",
+              "value": "week"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "use-your-own-key"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "5baa74cd-c4e1-47fa-85c4-c5e112a44614",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "9c90867b-adfc-4c1e-99c3-86d05e983900",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "https://remoteok.io/api?tags=analyst",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        176,
+        -176
+      ],
+      "id": "4aeca13b-671d-4dd1-9ebd-bb39fd064576",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        656,
+        -176
+      ],
+      "id": "97cb826a-4a99-4326-b0d1-e5ea6fa4e30d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle both JSearch and RemoteOK field names\nconst jobId = $json.job_id || $json.id || $json.slug || 'Unknown';\nconst jobTitle = ($json.job_title || $json.position || '').replace(/\"/g, \"'\");\nconst company = ($json.employer_name || $json.company || '').replace(/\"/g, \"'\");\nconst datePosted = $json.job_posted_at_datetime_utc || $json.date || '';\nconst desc = ($json.job_description || $json.description || '')\n  .substring(0, 1500)\n  .replace(/[\\n\\r\\t]/g, ' ')\n  .replace(/\"/g, \"'\");\n\nreturn [{\n  json: {\n    clean_prompt: `Return ONLY a valid JSON object with these exact keys: job_id (copy exactly: \"${jobId}\"), job_title (copy exactly: \"${jobTitle}\"), company (copy exactly: \"${company}\"), date_posted (copy exactly: \"${datePosted}\"), skills (array of technical skills like SQL Python Excel Power BI Tableau etc), work_type (Remote or Hybrid or On-site or Unknown), province (Canadian province code ON BC AB QC etc or Remote or Unknown), seniority (Junior or Mid or Senior or Unknown). Extract skills/work_type/province/seniority from this description: ${desc}`\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        -176
+      ],
+      "id": "ba65fe67-8cef-4152-9c50-a5d821ee9415",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sLt1bNK1xxKkMQDlIW7l3NunOaERmmcfiRHG55L_9jo",
+          "mode": "list",
+          "cachedResultName": "DA Job Market",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLt1bNK1xxKkMQDlIW7l3NunOaERmmcfiRHG55L_9jo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sLt1bNK1xxKkMQDlIW7l3NunOaERmmcfiRHG55L_9jo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "job_id",
+              "displayName": "job_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "province",
+              "displayName": "province",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "work_type",
+              "displayName": "work_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "seniority",
+              "displayName": "seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date_posted",
+              "displayName": "date_posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "collected_at",
+              "displayName": "collected_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        -176
+      ],
+      "id": "ad3f50b9-0d8e-460a-8a97-6686764df426",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Juxbnz2yNxPEEHXf",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function shortId(str) {\n  let h = 2166136261;\n  for (let i = 0; i < str.length; i++) {\n    h ^= str.charCodeAt(i);\n    h = Math.imul(h, 16777619);\n  }\n  const a = (h >>> 0).toString(36);\n  const b = ((str.length * 2654435761) >>> 0).toString(36);\n  return (a + b).padEnd(12, '0').slice(0, 12);\n}\n\nconst PROV_MAP = {\n  'ontario':'ON','on':'ON','quebec':'QC','québec':'QC','qc':'QC',\n  'alberta':'AB','ab':'AB','british columbia':'BC','bc':'BC',\n  'manitoba':'MB','mb':'MB','saskatchewan':'SK','sk':'SK',\n  'nova scotia':'NS','ns':'NS','new brunswick':'NB','nb':'NB',\n  'newfoundland and labrador':'NL','newfoundland':'NL','nl':'NL',\n  'prince edward island':'PE','pei':'PE','pe':'PE',\n  'yukon':'YT','yt':'YT','northwest territories':'NT','nt':'NT',\n  'nunavut':'NU','nu':'NU',\n};\n\nfunction extractProvince(loc = '', country = '') {\n  const s = String(loc).toLowerCase();\n  const m = s.match(/,\\s*([a-z]{2})\\b/);\n  if (m && PROV_MAP[m[1]]) return PROV_MAP[m[1]];\n  for (const key of Object.keys(PROV_MAP)) {\n    if (key.length > 2 && s.includes(key)) return PROV_MAP[key];\n  }\n  const c = String(country).toLowerCase();\n  if (c && !c.includes('canada') && c !== 'ca') return 'Non-CA';\n  return 'Unknown';\n}\n\nfunction inferSource(base) {\n  if (base.source) return base.source;\n  const url = (base.url || base.job_apply_link || base.redirect_url || '').toLowerCase();\n  if (url.includes('remoteok')) return 'RemoteOK';\n  return 'JSearch';\n}\n\nfunction safeParse(content) {\n  if (!content) return null;\n  if (typeof content !== 'string') return content;\n  try { return JSON.parse(content); } catch (_) {}\n  const lastBrace = content.lastIndexOf('}');\n  if (lastBrace > 0) {\n    try { return JSON.parse(content.slice(0, lastBrace + 1)); } catch (_) {}\n    try { return JSON.parse(content.slice(0, lastBrace + 1) + ']}'); } catch (_) {}\n  }\n  return null;\n}\n\nconst out = [];\nconst collectedAt = new Date().toISOString();\n\nconst groqItems = $input.all();\nconst batcherItems = $('Code in JavaScript3').all();\n\nfor (let i = 0; i < groqItems.length; i++) {\n  const raw = groqItems[i].json;\n  const batch = batcherItems[i]?.json || {};\n  const originals = batch.originals || [];\n\n  const content = raw?.choices?.[0]?.message?.content;\n  const parsed = safeParse(content);\n  if (!parsed) continue;\n\n  const results = parsed.results || [];\n\n  for (const r of results) {\n    const orig = originals.find(o => o.id === r.id) || originals[r.id] || {};\n    const base = orig._original || {};\n\n    const job_title   = base.title || base.position || base.job_title || orig.title || '';\n    const company     = base.company || base.company_name || base.employer_name || orig.company || '';\n    const location    = base.location || base.candidate_required_location || base.job_city || orig.location || '';\n    const country     = base.job_country || base.country || '';\n    const url         = base.url || base.job_apply_link || base.redirect_url || '';\n    const date_posted = base.date || base.job_posted_at_datetime_utc || base.posted_at || base.publication_date || '';\n\n    const idSource = url || `${job_title}|${company}|${location}`;\n\n    out.push({\n      json: {\n        job_id: shortId(idSource),\n        job_title,\n        company,\n        province: extractProvince(location, country),\n        work_type: r.work_type || 'Unknown',\n        seniority: r.seniority || 'Unknown',\n        skills: Array.isArray(r.skills) ? r.skills.join(', ') : (r.skills || ''),\n        date_posted,\n        source: inferSource(base),\n        collected_at: collectedAt,\n      },\n    });\n  }\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        -176
+      ],
+      "id": "264602b6-d898-4f43-a832-8070426c0d48",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.groq_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        -176
+      ],
+      "id": "bcaa1da3-8f86-4cbe-a4f9-76352b55ffcf",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "KwEXaV9EZDFmCNZ5",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const jobId = $json.job_id || $json.id || $json.slug || 'Unknown';\nconst jobTitle = ($json.job_title || $json.position || '').replace(/\"/g, '').replace(/'/g, '');\nconst company = ($json.employer_name || $json.company || '').replace(/\"/g, '').replace(/'/g, '');\nconst datePosted = $json.job_posted_at_datetime_utc || $json.date || '';\nconst desc = ($json.job_description || $json.description || '')\n  .substring(0, 1500)\n  .replace(/[\\n\\r\\t\"]/g, ' ');\n\nconst prompt = 'Return ONLY a valid JSON object with these exact keys: ' +\n  'job_id (value: ' + jobId + '), ' +\n  'job_title (value: ' + jobTitle + '), ' +\n  'company (value: ' + company + '), ' +\n  'date_posted (value: ' + datePosted + '), ' +\n  'skills (array of technical skills like SQL Python Excel Power BI Tableau etc), ' +\n  'work_type (Remote or Hybrid or On-site or Unknown), ' +\n  'province (Canadian province code ON BC AB QC etc or Remote or Unknown), ' +\n  'seniority (Junior or Mid or Senior or Unknown). ' +\n  'Extract skills/work_type/province/seniority from this description: ' + desc;\n\nreturn {\n  json: {\n    clean_prompt: prompt\n  }\n};\nfunction seniorityFromTitle(t = '') {\n  const s = t.toLowerCase();\n  if (/\\bintern\\b/.test(s)) return 'Intern';\n  if (/\\b(junior|jr\\.?|associate|entry|graduate|early career)\\b/.test(s)) return 'Junior';\n  if (/\\b(senior|sr\\.?|lead|principal|staff)\\b/.test(s)) return 'Senior';\n  return null;\n}\nfunction workTypeFromText(text = '') {\n  const s = text.toLowerCase();\n  if (/\\bremote\\b|\\bwork from home\\b|\\bwfh\\b/.test(s)) return 'Remote';\n  if (/\\bhybrid\\b/.test(s)) return 'Hybrid';\n  if (/\\bon[-\\s]?site\\b|\\bin[-\\s]?office\\b/.test(s)) return 'Onsite';\n  return null;\n}\n// Apply to each item before returning\n// (adjust to your existing loop structure)\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1056,
+        -48
+      ],
+      "id": "6dff37d5-a8a7-46b5-870b-d6121d76ddea",
+      "name": "Code in JavaScript1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "content": "## I'm a note \ncmd+Enter to run"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        592
+      ],
+      "id": "27f3b351-e5a6-4b45-9217-e16d4976cd6f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "const CHUNK_SIZE = 5;\n\nconst SYSTEM_PROMPT = `You analyze job postings and return structured data.\n\nINPUT: a JSON object with key \"jobs\" = array of postings (each has id, title, company, location, description).\n\nOUTPUT: a JSON object with key \"results\" = an array with one entry per input job, IN THE SAME ORDER.\n\nEach result entry MUST have:\n- id: number, copied from the input\n- seniority: one of \"Intern\",\"Junior\",\"Mid\",\"Senior\",\"Lead\",\"Unknown\"\n- work_type: one of \"Remote\",\"Hybrid\",\"Onsite\",\"Unknown\"\n- skills: array of strings (e.g. [\"SQL\",\"Python\",\"Power BI\"])\n\nEXAMPLE:\nInput: {\"jobs\":[{\"id\":0,\"title\":\"Senior Data Analyst\",\"company\":\"Acme\",\"location\":\"Toronto, ON\",\"description\":\"SQL Python Tableau required. Hybrid role.\"}]}\nOutput: {\"results\":[{\"id\":0,\"seniority\":\"Senior\",\"work_type\":\"Hybrid\",\"skills\":[\"SQL\",\"Python\",\"Tableau\"]}]}\n\nRules:\n- Always return ALL input jobs in results, never an empty array unless the input jobs array is empty.\n- Output valid JSON only. No prose, no markdown.`;\n\nconst items = $input.all().map(i => i.json);\n\nconst slim = items.map((j, idx) => ({\n  id: idx,\n  title: j.title || j.position || j.job_title || '',\n  company: j.company || j.company_name || j.employer_name || '',\n  location: j.location || j.candidate_required_location || j.job_city || '',\n  description: (j.description || j.job_description || '').slice(0, 800),\n  _original: j,\n}));\n\nconst batches = [];\nfor (let i = 0; i < slim.length; i += CHUNK_SIZE) {\n  const chunk = slim.slice(i, i + CHUNK_SIZE);\n  const jobs_for_llm = chunk.map(({ _original, ...rest }) => rest);\n\n  batches.push({\n    json: {\n      groq_body: {\n        model: \"llama-3.3-70b-versatile\",   // ← back from 8b-instant,\n        temperature: 0,\n        max_tokens: 2000,\n        response_format: { type: \"json_object\" },\n        messages: [\n          { role: \"system\", content: SYSTEM_PROMPT },\n          {\n            role: \"user\",\n            content: `Analyze these ${jobs_for_llm.length} job postings and return results for ALL of them:\\n\\n${JSON.stringify({ jobs: jobs_for_llm })}`,\n          },\n        ],\n      },\n      originals: chunk,\n    },\n  });\n}\n\nreturn batches;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        -176
+      ],
+      "id": "485d1cca-7042-490c-8178-3de13da140e9",
+      "name": "Code in JavaScript3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c34e72c6-2a2a-43bd-9a79-4f29345bd3c4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a621b6c016836bf75602a21e69f594ff5c4b61c47e0850623afd2d10cdabb98d"
+  },
+  "id": "tJO3ZyK4W34QYIm3",
+  "tags": []
+}
